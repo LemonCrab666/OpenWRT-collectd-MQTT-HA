@@ -1,63 +1,65 @@
 
 # OpenWRT-collectd-MQTT-HA
-Collect OpenWRT statistics from your Router using this MQTT Template.
+使用此 MQTT 模板从您的路由器收集 OpenWRT 统计数据。
 
-## Setup
-### Home Assistant MQTT setup
-Let's prepare Home Assistant first.
+## 设置
+### Home Assistant MQTT 设置
+让我们先准备 Home Assistant。
 
-If you don't have it yet, get Mosquitto Broker up and running. Read ![the official docs](https://github.com/home-assistant/addons/blob/174f8e66d0eaa26f01f528beacbde0bd111b711c/mosquitto/DOCS.md) to get started. Don't forget to configure the MQTT Integration as well!
+如果您还没有，请启动并运行 Mosquitto Broker。 阅读 ![官方文档](https://github.com/home-assistant/addons/blob/174f8e66d0eaa26f01f528beacbde0bd111b711c/mosquitto/DOCS.md) 以开始使用。不要忘记配置 MQTT 集成！
 
 ### OpenWRT
 
-Install the following packages:
+安装以下软件包：
 
     luci-app-statistics 
     collectd-mod-mqtt
 
-The first package will install `collectd` and most of the essential dependencies.
+将安装‘collectd’包和大多数基本依赖项。
 
 Optional `collectd-mod-*` packages can provide more data. These are recommended:
+可选`collectd-mod-*`包可以提供更多数据。以下是建议安装：
 
     collectd-mod-thermal
     collectd-mod-uptime
     collectd-mod-dhcpleases
+    collectd-mod-conntrack
 
-Navigate to *Statistics > Setup*. If you installed optional mod packages, enable them in the *General Plugin* tab.
+导航到‘ 统计 > 设置 ’，如果您安装了可选的 mod 包，请在 通用插件 选项卡中启用它们。
 
-If you're running OpenWRT snapshots from the master branch (24.x and above), the luci-app-statistics [has the ability](https://github.com/openwrt/luci/commit/8bf5646459e229c1d01736f7c45f3b1c9bf3058f) to configure MQTT via GUI. If you're running a previous version up to OpenWRT 23.05, you'll have to follow the CLI steps. The next major release will have this built in.
+如果您从 master 分支（24.x 及更高版本）运行 OpenWRT 快照，则 luci-app-statistics [能供](https://github.com/openwrt/luci/commit/8bf5646459e229c1d01736f7c45f3b1c9bf3058f) 通过 GUI 配置 MQTT。如果您运行的是 OpenWRT 23.05 之前的版本，则必须按照 CLI 步骤操作。下一个主要版本将内置此功能。
 <details>
-     <summary>GUI configuration - OpenWRT snapshots</summary>
+     <summary>GUI 配置 - OpenWRT snapshots</summary>
     
-In the *Output Plugins* Tab, enable *Mqtt* and click on Configure. Then click Add, and enter the following Details:
-- Name - `OpenWRT` or what you like
-- Host - this is your Home Assistant IP
-- Port - `1883` if you're using the default port
-- User - your MQTT User
-- Password - your MQTT password
+在 Output Plugins 选项卡中，启用 Mqtt 并单击 Configure。然后单击 Add，并输入以下 Details：
+- Name - `OpenWRT` 或您喜欢的
+- Host - 这是您的 Home Assistant IP
+- Port - `1883` 如果您使用的是默认端口
+- User - 您的 MQTT 用户
+- Password - 您的 MQTT 密码
 - Prefix - `collectd`
 
-Save and apply changes.  
+保存并应用更改。
 
 </details>
 
 
 <details>
-     <summary>CLI configuration - up to OpenWRT 23.05</summary>
-Connect to your OpenWRT router via SSH, create a new folder called `conf.d` in `/etc/collectd/`
+     <summary>CLI 配置 - OpenWRT 23.05 及以下版本</summary>
+通过 SSH 连接到您的 OpenWRT 路由器，在 /etc/collectd/ 中创建一个名为 'conf.d' 的新文件夹
 
-Using your favourite editor, create a new file in conf.d called `mqtt.conf`
+使用您最喜欢的编辑器，在 conf.d 中创建一个名为 `mqtt.conf`
 
-Add this configuration to the file, and edit the lines:
-* `Host` replace this with your Home Assistant IP
-* `User` replace this with your MQTT User
-* `Password` replace this with your MQTT password
+将此配置添加到文件中，并编辑以下行：
+* `Host` 将其替换为您的 Home Assistant IP
+* `User` 将其替换为您的 MQTT 用户
+* `Password` 将此密码替换为您的 MQTT 密码
    
 ```shell
 LoadPlugin mqtt
 <Plugin "mqtt">
   <Publish "OpenWRT">
-    Host "192.168.1.101"
+    Host "192.168.1.1"
     Port "1883"
     User "mqtt_openwrt"
     Password "MySuperSafePW2!@"
@@ -68,51 +70,52 @@ LoadPlugin mqtt
 </Plugin>
 ```
 
-Restart collectd on OpenWRT by executing `service collectd restart`.
+通过执行 `service collectd restart` 在 OpenWRT 上重新启动 collectd.
 </details>
 
-OpenWRT will start sending data to Home Assistant, but you won't be able to see it (yet).
+OpenWRT 将开始向 Home Assistant 发送数据，但您（还）无法看到它。
 
-### Home Assistant Entities setup
+### Home Assistant 实体设置
 
-Go back to Home Assistant for the final setup.
-Some text replacements are required, on Windows you can use Notepad++.
+返回 Home Assistant 进行最终设置。
+一些文本替换是必需的，在 Windows 上您可以使用 Notepad++。
 
-Open this sample [configuration.yaml](configuration.yaml).
+打开此示例 [configuration.yaml](configuration.yaml).
 
 Replace occurrencies of `<Open-WRT-Hostname>` with the value you see in *OpenWRT > System > System > General Settings > Hostname*
+将<Open-WRT-Hostname>替换为您在 OpenWRT > 系统 > 系统 > 常规设置 > 主机名称 中看到的值
 
-Each sensor has a section like the following:
+每个传感器都有一个如下所示的部分：
 
 ```yaml
     device:
-            identifiers: WRT7800
-            name: Router Netgear R7800
-            model: R7800
-            manufacturer: Netgear
+            identifiers: J4125-4L
+            name: CncTion J4125-4L
+            model: J4125-4L
+            manufacturer: CncTion
 ```
 
-It allows to create a MQTT device, so all entities are grouped nicely. Replace these example values for **each sensor** entering what you like, these are just informational labels. Use the same values for each entity!
+它允许创建 MQTT 设备，因此所有实体都很好地分组。为**每个传感器替换**这些示例值，输入您喜欢的内容，这些只是信息标签。对每个实体使用相同的值！
 
-When you are done with text editing, paste the code in your configuration.yaml on Home Assistant.
+完成文本编辑后，将代码粘贴到 Home Assistant 上的 configuration.yaml 中。.
 
-Save the file and restart Home Assistant.
+保存文件并重新启动 Home Assistant。
 
-When finished, you will have a new MQTT device named after the name you have chosen above, and the entities will be populated.
+完成后，您将拥有一个以您在上面选择的名称命名的新 MQTT 设备，并且将填充实体。
 
-Please note that some entities require additional OpenWRT mod packages.
+请注意，某些实体需要额外的 OpenWRT mod 包。
 
-## Dashboard and card setup
+## 仪表板和卡片设置
 
-To use this card, you must install `multiple-entity-row` and `mini-graph-card` from HACS.
+要使用此卡，您必须从 HACS 安装 `multiple-entity-row` 和 `mini-graph-card`。
 
-Edit the dashboard, add a new YAML card and paste the code you find in [lovelace.yaml](lovelace.yaml).
+编辑仪表板，添加新的 YAML 卡片并粘贴您在[lovelace.yaml](lovelace.yaml)中找到的代码。
 
-## Troubleshooting
+## 故障排除
 
-To quickly check that you're receiving data from your OpenWRT router, open HA and Navigate to the MQTT Integration, then click *Configure*. In the section Listen to a topic, add `collectd/#`, then click *Start Listening*. You should see many messages coming from OpenWRT.
+要快速检查您是否正在从 OpenWRT 路由器接收数据，请打开 HA 并导航到 MQTT 集成，然后单击*设置*。在 Listen to a topic 部分中，添加 `collectd/#`，然后单击 开始监听 。您应该会看到许多来自 OpenWRT 的消息。
 
-Check received data on MQTT server using  [MQTT Explorer](https://community.home-assistant.io/t/addon-mqtt-explorer-new-version/603739)  or use this code if you prefer:
+使用[MQTT Explorer](https://community.home-assistant.io/t/addon-mqtt-explorer-new-version/603739)在 MQTT 服务器上检查收到的数据，或者如果您愿意，请使用以下代码：
 
     mosquitto_sub -h localhost -p 1883 -u user -P Password -t collectd/# -d
 
