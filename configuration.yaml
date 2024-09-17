@@ -1,7 +1,19 @@
-### OpenWRT MQTT
+
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+### ImmortalWrt MQTT
 mqtt:
   sensor:
-   -  name: OpenWRT RAM buffered
+   -  name: ImmortalWrt RAM buffered
       state_topic: collectd/<Open-WRT-Hostname>/memory/memory-buffered
       unit_of_measurement: MB
       value_template: "{{ (value.split(':')[1].split('\x00')[0] | float(0) / 1000000) | round(1) }}"
@@ -10,11 +22,11 @@ mqtt:
       device_class: data_size
       icon: mdi:memory
       device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
-   -  name: OpenWRT RAM free
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
+   -  name: ImmortalWrt RAM free
       state_topic: collectd/<Open-WRT-Hostname>/memory/memory-free
       unit_of_measurement: MB
       value_template: "{{ (value.split(':')[1].split('\x00')[0] | float(0) / 1000000) | round(1) }}"
@@ -23,11 +35,11 @@ mqtt:
       device_class: data_size
       icon: mdi:memory
       device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
-   -  name: OpenWRT RAM cached
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
+   -  name: ImmortalWrt RAM cached
       state_topic: collectd/<Open-WRT-Hostname>/memory/memory-cached
       unit_of_measurement: MB
       value_template: "{{ (value.split(':')[1].split('\x00')[0] | float(0) / 1000000) | round(1) }}"
@@ -36,11 +48,11 @@ mqtt:
       device_class: data_size
       icon: mdi:memory
       device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
-   -  name: OpenWRT RAM used
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
+   -  name: ImmortalWrt RAM used
       state_topic: collectd/<Open-WRT-Hostname>/memory/memory-used
       unit_of_measurement: MB
       value_template: "{{ (value.split(':')[1].split('\x00')[0] | float(0) / 1000000) | round(1) }}"
@@ -49,13 +61,13 @@ mqtt:
       device_class: data_size
       icon: mdi:memory
       device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
  
 # load
-   -  name: OpenWRT L1
+   -  name: ImmortalWrt L1
       unit_of_measurement: load
       state_topic: collectd/<Open-WRT-Hostname>/load/load
       value_template: "{{ (value.split(':')[1] | float(0)) | round(1) }}"
@@ -63,11 +75,11 @@ mqtt:
       state_class: measurement
       icon: mdi:gauge
       device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
-   -  name: OpenWRT L5
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
+   -  name: ImmortalWrt L5
       unit_of_measurement: load
       state_topic: collectd/<Open-WRT-Hostname>/load/load
       value_template: "{{ (value.split(':')[2] | float(0)) | round(1) }}"
@@ -75,11 +87,11 @@ mqtt:
       state_class: measurement
       icon: mdi:gauge
       device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
-   -  name: OpenWRT L15
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
+   -  name: ImmortalWrt L15
       unit_of_measurement: load
       state_topic: collectd/<Open-WRT-Hostname>/load/load
       value_template: "{{ (value.split(':')[3].split('\x00')[0] | float(0)) | round(1) }}"
@@ -87,13 +99,93 @@ mqtt:
       state_class: measurement
       icon: mdi:gauge
       device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
- 
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
+
+# Wan interface
+   -  name: ImmortalWrt wan errors
+      state_topic: collectd/<Open-WRT-Hostname>/interface-eth1/if_errors
+      unit_of_measurement: packets
+      value_template: >-
+        {% set parts = value.split(':') %}
+        {% if parts|length >= 3 %}
+          {% set value1 = parts[1]|float(0) %}
+          {% set value2 = parts[2].split('\x00')[0]|float(0) %}
+          {{ (value1 + value2)|round(0)|int }}
+        {% else %}
+          {{ 0 }}
+        {% endif %}
+      unique_id: wan-errors
+      state_class: measurement
+      icon: mdi:lan-disconnect
+      device:
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
+   -  name: ImmortalWrt wan dropped
+      state_topic: collectd/<Open-WRT-Hostname>/interface-eth1/if_dropped
+      unit_of_measurement: packets
+      value_template: >-
+        {% set parts = value.split(':') %}
+        {% if parts|length >= 3 %}
+          {% set value1 = parts[1]|float(0) %}
+          {% set value2 = parts[2].split('\x00')[0]|float(0) %}
+          {{ (value1 + value2)|round(0)|int }}
+        {% else %}
+          {{ 0 }}
+        {% endif %}
+      unique_id: wan-dropped
+      state_class: measurement
+      icon: mdi:lan-pending
+      device:
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
+   -  name: ImmortalWrt wan TX MB/s
+      state_topic: collectd/<Open-WRT-Hostname>/interface-eth1/if_octets
+      unit_of_measurement: MB/s
+      value_template: "{{ (value.split(':')[2].split('\x00')[0] | float(0) / 1048576) | round (2) }}"
+      unique_id: wan-tx-transfer
+      state_class: measurement
+      device_class: data_rate
+      icon: mdi:upload-network
+      device:
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
+   -  name: ImmortalWrt wan RX MB/s
+      state_topic: collectd/<Open-WRT-Hostname>/interface-eth1/if_octets
+      unit_of_measurement: MB/s
+      value_template: "{{ (value.split(':')[1] | float(0) / 1048576) | round (2) }}"
+      unique_id: wan-rx-transfer
+      state_class: measurement
+      device_class: data_rate
+      icon: mdi:download-network
+      device:
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
+   -  name: ImmortalWrt wan packets
+      state_topic: collectd/<Open-WRT-Hostname>/interface-eth1/if_packets
+      unit_of_measurement: packets/s
+      value_template: "{{ value.split(':')[1] | int + value.split(':')[2].split('\x00')[0] | int | float(0) | round (0) }}"
+      unique_id: wan-packets
+      state_class: measurement
+      icon: mdi:lan-connect
+      device:
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
+
 # br-lan interface
-   -  name: OpenWRT br-lan errors
+   -  name: ImmortalWrt br-lan errors
       state_topic: collectd/<Open-WRT-Hostname>/interface-br-lan/if_errors
       unit_of_measurement: packets
       value_template: >-
@@ -109,11 +201,11 @@ mqtt:
       state_class: measurement
       icon: mdi:lan-disconnect
       device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
-   -  name: OpenWRT br-lan dropped
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
+   -  name: ImmortalWrt br-lan dropped
       state_topic: collectd/<Open-WRT-Hostname>/interface-br-lan/if_dropped
       unit_of_measurement: packets
       value_template: >-
@@ -129,11 +221,11 @@ mqtt:
       state_class: measurement
       icon: mdi:lan-pending
       device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
-   -  name: OpenWRT br-lan TX MB/s
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
+   -  name: ImmortalWrt br-lan TX MB/s
       state_topic: collectd/<Open-WRT-Hostname>/interface-br-lan/if_octets
       unit_of_measurement: MB/s
       value_template: "{{ (value.split(':')[1] | float(0) / 1048576) | round (2) }}"
@@ -142,11 +234,11 @@ mqtt:
       device_class: data_rate
       icon: mdi:upload-network
       device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
-   -  name: OpenWRT br-lan RX MB/s
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
+   -  name: ImmortalWrt br-lan RX MB/s
       state_topic: collectd/<Open-WRT-Hostname>/interface-br-lan/if_octets
       unit_of_measurement: MB/s
       value_template: "{{ (value.split(':')[2].split('\x00')[0] | float(0) / 1048576) | round (2) }}"
@@ -155,11 +247,11 @@ mqtt:
       device_class: data_rate
       icon: mdi:download-network
       device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
-   -  name: OpenWRT br-lan packets
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
+   -  name: ImmortalWrt br-lan packets
       state_topic: collectd/<Open-WRT-Hostname>/interface-br-lan/if_packets
       unit_of_measurement: packets/s
       value_template: "{{ value.split(':')[1] | int + value.split(':')[2].split('\x00')[0] | int | float(0) | round (0) }}"
@@ -167,159 +259,131 @@ mqtt:
       state_class: measurement
       icon: mdi:lan-connect
       device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
  
-# wg interface
-   -  name: OpenWRT wg errors
-      state_topic: collectd/<Open-WRT-Hostname>/interface-wg/if_errors
-      unit_of_measurement: packets
-      value_template: "{{ value.split(':')[1] | int + value.split(':')[2].split('\x00')[0] | int | float(0) }}"
-      unique_id: wg-errors
-      state_class: measurement
-      icon: mdi:lan-disconnect
-      device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
-   -  name: OpenWRT wg dropped
-      state_topic: collectd/<Open-WRT-Hostname>/interface-wg/if_dropped
-      unit_of_measurement: packets
-      value_template: "{{ value.split(':')[1] | int + value.split(':')[2].split('\x00')[0] | int | int | float(0) | round (0) }}"
-      unique_id: wg-dropped
-      state_class: measurement
-      icon: mdi:lan-pending
-      device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
-   -  name: OpenWRT wg TX MB/s
-      state_topic: collectd/<Open-WRT-Hostname>/interface-wg/if_octets
-      unit_of_measurement: MB/s
-      value_template: "{{ value.split(':')[1] | float(0) / 1048576 | round (2) }}"
-      unique_id: wg-tx-transfer
-      state_class: measurement
-      device_class: data_rate
-      icon: mdi:upload-network
-      device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
-   -  name: OpenWRT wg RX MB/s
-      state_topic: collectd/<Open-WRT-Hostname>/interface-wg/if_octets
-      unit_of_measurement: MB/s
-      value_template: "{{ value.split(':')[2].split('\x00')[0] | float(0) / 1048576 | round (2) }}"
-      unique_id: wg-rx-transfer
-      state_class: measurement
-      device_class: data_rate
-      icon: mdi:download-network
-      device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
-   -  name: OpenWRT wg packets
-      state_topic: collectd/<Open-WRT-Hostname>/interface-wg/if_packets
-      unit_of_measurement: packets/s
-      value_template: "{{ value.split(':')[1] | int + value.split(':')[2].split('\x00')[0] | int | float(0) | round (0) }}"
-      unique_id: wg-packets
-      state_class: measurement
-      icon: mdi:lan-connect
-      device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
+# wireguard interface
+#   -  name: ImmortalWrt wireguard errors
+#      state_topic: collectd/<Open-WRT-Hostname>/interface-wireguard/if_errors
+#      unit_of_measurement: packets
+#      value_template: "{{ value.split(':')[1] | int + value.split(':')[2].split('\x00')[0] | int | float(0) }}"
+#      unique_id: wireguard-errors
+#      state_class: measurement
+#      icon: mdi:lan-disconnect
+#      device:
+#        identifiers: ImmortalWrt
+#        name: CncTion J4125-4L
+#        model: J4125-4L
+#        manufacturer: CncTion
+#   -  name: ImmortalWrt wireguard dropped
+#      state_topic: collectd/<Open-WRT-Hostname>/interface-wireguard/if_dropped
+#      unit_of_measurement: packets
+#      value_template: "{{ value.split(':')[1] | int + value.split(':')[2].split('\x00')[0] | int | int | float(0) | round (0) }}"
+#      unique_id: wireguard-dropped
+#      state_class: measurement
+#      icon: mdi:lan-pending
+#      device:
+#        identifiers: ImmortalWrt
+#        name: CncTion J4125-4L
+#        model: J4125-4L
+#        manufacturer: CncTion
+#   -  name: ImmortalWrt wireguard TX MB/s
+#      state_topic: collectd/<Open-WRT-Hostname>/interface-wireguard/if_octets
+#      unit_of_measurement: MB/s
+#      value_template: "{{ value.split(':')[1] | float(0) / 1048576 | round (2) }}"
+#      unique_id: wireguard-tx-transfer
+#      state_class: measurement
+#      device_class: data_rate
+#      icon: mdi:upload-network
+#      device:
+#        identifiers: ImmortalWrt
+#        name: CncTion J4125-4L
+#        model: J4125-4L
+#        manufacturer: CncTion
+#   -  name: ImmortalWrt wireguard RX MB/s
+#      state_topic: collectd/<Open-WRT-Hostname>/interface-wireguard/if_octets
+#      unit_of_measurement: MB/s
+#      value_template: "{{ value.split(':')[2].split('\x00')[0] | float(0) / 1048576 | round (2) }}"
+#      unique_id: wireguard-rx-transfer
+#      state_class: measurement
+#      device_class: data_rate
+#      icon: mdi:download-network
+#      device:
+#        identifiers: ImmortalWrt
+#        name: CncTion J4125-4L
+#        model: J4125-4L
+#        manufacturer: CncTion
+#   -  name: ImmortalWrt wireguard packets
+#      state_topic: collectd/<Open-WRT-Hostname>/interface-wireguard/if_packets
+#      unit_of_measurement: packets/s
+#      value_template: "{{ value.split(':')[1] | int + value.split(':')[2].split('\x00')[0] | int | float(0) | round (0) }}"
+#      unique_id: wireguard-packets
+#      state_class: measurement
+#      icon: mdi:lan-connect
+#      device:
+#        identifiers: ImmortalWrt
+#        name: CncTion J4125-4L
+#        model: J4125-4L
+#        manufacturer: CncTion
 
 # uptime
-   -  name: OpenWRT uptime
+   -  name: ImmortalWrt uptime
       state_topic: collectd/<Open-WRT-Hostname>/uptime/uptime
       device_class: timestamp
       value_template: "{{ as_datetime( (value.split(':')[0] | float ) - (value.split(':')[1].split('\x00')[0] | float ) ) }}"
-      unique_id: ap_uptime
+      unique_id: immortalwrt_uptime
       icon: mdi:clock
       device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
 # ping
-   -  name: OpenWRT google ping
+   -  name: ImmortalWrt google ping
       state_topic: collectd/<Open-WRT-Hostname>/ping/ping-8.8.8.8
       unit_of_measurement: ms
       value_template: "{{ value.split(':')[1].split('\x00')[0] | float(0) | round(2) }}"
-      unique_id: ap_ping
+      unique_id: immortalwrt_ping
       state_class: measurement
       icon: mdi:clipboard-flow
       device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
         
 # connections
-   -  name: OpenWRT connections
+   -  name: ImmortalWrt connections
       state_topic: collectd/<Open-WRT-Hostname>/conntrack/conntrack
       unit_of_measurement: connections
       value_template: "{{ value.split(':')[1].split('\0')[0] | int }}"
-      unique_id: ap_connections
+      unique_id: immortalwrt_connections
       state_class: measurement
       icon: mdi:connection
       device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
-        
-# 2.4 ghz clients
-   -  name: OpenWRT clients 2.4Ghz
-      state_topic: collectd/<Open-WRT-Hostname>/iwinfo-wlan1/stations
-      unit_of_measurement: clients
-      value_template: "{{ value.split(':')[1].split('\x00')[0] | int | }}"
-      unique_id: ap_clients2
-      state_class: measurement
-      icon: mdi:router-network-wireless
-      device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
-        
-# 5 ghz clients
-   -  name: OpenWRT clients 5Ghz
-      state_topic: collectd/<Open-WRT-Hostname>/iwinfo-wlan0/stations
-      unit_of_measurement: clients
-      value_template: "{{ value.split(':')[1].split('\x00')[0] | int | }}"
-      unique_id: ap_clients5
-      state_class: measurement
-      icon: mdi:router-network-wireless
-      device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
 
 # temperature
-   -  name: OpenWRT temperature
-      state_topic: collectd/<Open-WRT-Hostname>/thermal-thermal_zone9/temperature
+   -  name: ImmortalWrt temperature
+      state_topic: collectd/<Open-WRT-Hostname>/thermal-thermal_zone0/temperature
       unit_of_measurement: °C
       value_template: "{{ value.split(':')[1].split('\x00')[0] | int | float(0) }}"
-      unique_id: ap_temp
+      unique_id: immortalwrt_temp
       state_class: measurement
       device_class: temperature
       device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
 
 # DHCP clients
-   -  name: OpenWRT DHCP Active Leases
+   -  name: ImmortalWrt DHCP Active Leases
       state_topic: collectd/<Open-WRT-Hostname>/dhcpleases/count
       unit_of_measurement: clients
       value_template: "{{ value.split(':')[1].split('\x00')[0] | int }}"
@@ -327,7 +391,7 @@ mqtt:
       state_class: measurement
       icon: mdi:router-network
       device:
-        identifiers: WRT7800
-        name: Router Netgear R7800
-        model: R7800
-        manufacturer: Netgear
+        identifiers: ImmortalWrt
+        name: CncTion J4125-4L
+        model: J4125-4L
+        manufacturer: CncTion
