@@ -89,7 +89,7 @@ Replace occurrencies of `<Open-WRT-Hostname>` with the value you see in *OpenWRT
 
 ```yaml
     device:
-            identifiers: J4125-4L
+            identifiers: ImmortalWrt
             name: CncTion J4125-4L
             model: J4125-4L
             manufacturer: CncTion
